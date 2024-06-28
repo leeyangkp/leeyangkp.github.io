@@ -200,11 +200,11 @@
 <p>为了在发布新版本的过程中，实现平稳过渡。业界逐渐形成了几个常用的发布策略：灰度发布，蓝绿发布，A&#x2F;B测试等，尽可能避免因为发布导致流量丢失或着服务不可用。下面将着重介绍灰度发布和蓝绿发布的原理及实践。</p>
 <h1 id="灰度发布"><a href="#灰度发布" class="headerlink" title="灰度发布"></a>灰度发布</h1><p>又称金丝雀发布，当版本升级时，使一部分用户使用新版本，其他用户继续使用老版本，待新版本稳定后，逐步扩大新版本用户范围，直到将所有用户流量迁移到新版本上面。这样可以保障在服务的升级过程中，观测新版本健康状况，降低了故障带来的影响面，同时支持快速回滚。</p>
 <p>以下示意图可描述灰度发布的大致流程：先切分 20% 的流量到新版本，若表现正常，逐步增加新版本流量占比，继续观测新版本表现。如果一直没有异常，那么将所有流量都切分到新版本，并下线旧版本。</p>
-<p><img src="/canary.gif" alt="灰度发布过程"></p>
+<p><img src="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/canary.gif" alt="灰度发布过程"></p>
 <p>灰度过程中，新版本出现异常，则快速将流量切回老版本。</p>
-<p><img src="/canary_ex.gif" alt="灰度发布过程中出现异常"></p>
+<p><img src="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/canary_ex.gif" alt="灰度发布过程中出现异常"></p>
 <h1 id="蓝绿发布"><a href="#蓝绿发布" class="headerlink" title="蓝绿发布"></a>蓝绿发布</h1><p>蓝绿发布是在保留旧版本的同时，部署新版本两个版本同时在线，通过切换路由权重（非0即100）的方式实现应用的不同版本上线或者下线，如果新版本有问题，可以快速切换回旧版本。</p>
-<p><img src="/blue.gif" alt="蓝绿发布过程"></p>
+<p><img src="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/blue.gif" alt="蓝绿发布过程"></p>
 <h1 id="灰度发布或蓝绿发布的实现方式"><a href="#灰度发布或蓝绿发布的实现方式" class="headerlink" title="灰度发布或蓝绿发布的实现方式"></a>灰度发布或蓝绿发布的实现方式</h1><h2 id="基于Kubernetes的Service"><a href="#基于Kubernetes的Service" class="headerlink" title="基于Kubernetes的Service"></a>基于Kubernetes的Service</h2><h3 id="灰度发布原理"><a href="#灰度发布原理" class="headerlink" title="灰度发布原理"></a>灰度发布原理</h3><h3 id="灰度发布实现"><a href="#灰度发布实现" class="headerlink" title="灰度发布实现"></a>灰度发布实现</h3><h3 id="蓝绿发布原理"><a href="#蓝绿发布原理" class="headerlink" title="蓝绿发布原理"></a>蓝绿发布原理</h3><h3 id="蓝绿发布实现"><a href="#蓝绿发布实现" class="headerlink" title="蓝绿发布实现"></a>蓝绿发布实现</h3><h2 id="基于Kubernetes的Ingress"><a href="#基于Kubernetes的Ingress" class="headerlink" title="基于Kubernetes的Ingress"></a>基于Kubernetes的Ingress</h2><h3 id="灰度发布原理-1"><a href="#灰度发布原理-1" class="headerlink" title="灰度发布原理"></a>灰度发布原理</h3><h3 id="蓝绿发布原理-1"><a href="#蓝绿发布原理-1" class="headerlink" title="蓝绿发布原理"></a>蓝绿发布原理</h3><h3 id="灰度发布实现-1"><a href="#灰度发布实现-1" class="headerlink" title="灰度发布实现"></a>灰度发布实现</h3><h3 id="蓝绿发布实现-1"><a href="#蓝绿发布实现-1" class="headerlink" title="蓝绿发布实现"></a>蓝绿发布实现</h3><h2 id="基于istio"><a href="#基于istio" class="headerlink" title="基于istio"></a>基于istio</h2>
       
     </div>

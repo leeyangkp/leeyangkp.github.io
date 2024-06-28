@@ -27,15 +27,15 @@
 <meta property="og:site_name" content="关山南月">
 <meta property="og:description" content="服务升级面临的最大的挑战是新旧业务切换，将服务从预生产环境带到新生产环境，同时要保证系统不间断提供服务。如果直接将新版本上线发布给全部用户，一旦遇到线上事故，对用户的影响极大，甚至不得不回滚到前一版本，严重影响了用户体验。 为了在发布新版本的过程中，实现平稳过渡。业界逐渐形成了几个常用的发布策略：灰度发布，蓝绿发布，A&#x2F;B测试等，尽可能避免因为发布导致流量丢失或着服务不可用。下面将着重介">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://www.leeyangkp.com/canary.gif">
-<meta property="og:image" content="https://www.leeyangkp.com/canary_ex.gif">
-<meta property="og:image" content="https://www.leeyangkp.com/blue.gif">
+<meta property="og:image" content="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/canary.gif">
+<meta property="og:image" content="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/canary_ex.gif">
+<meta property="og:image" content="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/blue.gif">
 <meta property="article:published_time" content="2023-09-12T11:39:09.000Z">
-<meta property="article:modified_time" content="2024-06-28T02:26:30.447Z">
+<meta property="article:modified_time" content="2024-06-28T02:38:05.289Z">
 <meta property="article:author" content="关山南月">
 <meta property="article:tag" content="灰度发布">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://www.leeyangkp.com/canary.gif">
+<meta name="twitter:image" content="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/canary.gif">
 
 <link rel="canonical" href="https://www.leeyangkp.com/2023/09/12/Kubernetes%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E4%BA%8E%E8%93%9D%E7%BB%BF%E5%8F%91%E5%B8%83%E7%9A%84%E5%8E%9F%E7%90%86%E5%8F%8A%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/">
 
@@ -206,11 +206,11 @@
 <p>为了在发布新版本的过程中，实现平稳过渡。业界逐渐形成了几个常用的发布策略：灰度发布，蓝绿发布，A&#x2F;B测试等，尽可能避免因为发布导致流量丢失或着服务不可用。下面将着重介绍灰度发布和蓝绿发布的原理及实践。</p>
 <h1 id="灰度发布"><a href="#灰度发布" class="headerlink" title="灰度发布"></a>灰度发布</h1><p>又称金丝雀发布，当版本升级时，使一部分用户使用新版本，其他用户继续使用老版本，待新版本稳定后，逐步扩大新版本用户范围，直到将所有用户流量迁移到新版本上面。这样可以保障在服务的升级过程中，观测新版本健康状况，降低了故障带来的影响面，同时支持快速回滚。</p>
 <p>以下示意图可描述灰度发布的大致流程：先切分 20% 的流量到新版本，若表现正常，逐步增加新版本流量占比，继续观测新版本表现。如果一直没有异常，那么将所有流量都切分到新版本，并下线旧版本。</p>
-<p><img src="/canary.gif" alt="灰度发布过程"></p>
+<p><img src="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/canary.gif" alt="灰度发布过程"></p>
 <p>灰度过程中，新版本出现异常，则快速将流量切回老版本。</p>
-<p><img src="/canary_ex.gif" alt="灰度发布过程中出现异常"></p>
+<p><img src="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/canary_ex.gif" alt="灰度发布过程中出现异常"></p>
 <h1 id="蓝绿发布"><a href="#蓝绿发布" class="headerlink" title="蓝绿发布"></a>蓝绿发布</h1><p>蓝绿发布是在保留旧版本的同时，部署新版本两个版本同时在线，通过切换路由权重（非0即100）的方式实现应用的不同版本上线或者下线，如果新版本有问题，可以快速切换回旧版本。</p>
-<p><img src="/blue.gif" alt="蓝绿发布过程"></p>
+<p><img src="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/blue.gif" alt="蓝绿发布过程"></p>
 <h1 id="灰度发布或蓝绿发布的实现方式"><a href="#灰度发布或蓝绿发布的实现方式" class="headerlink" title="灰度发布或蓝绿发布的实现方式"></a>灰度发布或蓝绿发布的实现方式</h1><h2 id="基于Kubernetes的Service"><a href="#基于Kubernetes的Service" class="headerlink" title="基于Kubernetes的Service"></a>基于Kubernetes的Service</h2><h3 id="灰度发布原理"><a href="#灰度发布原理" class="headerlink" title="灰度发布原理"></a>灰度发布原理</h3><h3 id="灰度发布实现"><a href="#灰度发布实现" class="headerlink" title="灰度发布实现"></a>灰度发布实现</h3><h3 id="蓝绿发布原理"><a href="#蓝绿发布原理" class="headerlink" title="蓝绿发布原理"></a>蓝绿发布原理</h3><h3 id="蓝绿发布实现"><a href="#蓝绿发布实现" class="headerlink" title="蓝绿发布实现"></a>蓝绿发布实现</h3><h2 id="基于Kubernetes的Ingress"><a href="#基于Kubernetes的Ingress" class="headerlink" title="基于Kubernetes的Ingress"></a>基于Kubernetes的Ingress</h2><h3 id="灰度发布原理-1"><a href="#灰度发布原理-1" class="headerlink" title="灰度发布原理"></a>灰度发布原理</h3><h3 id="蓝绿发布原理-1"><a href="#蓝绿发布原理-1" class="headerlink" title="蓝绿发布原理"></a>蓝绿发布原理</h3><h3 id="灰度发布实现-1"><a href="#灰度发布实现-1" class="headerlink" title="灰度发布实现"></a>灰度发布实现</h3><h3 id="蓝绿发布实现-1"><a href="#蓝绿发布实现-1" class="headerlink" title="蓝绿发布实现"></a>蓝绿发布实现</h3><h2 id="基于istio"><a href="#基于istio" class="headerlink" title="基于istio"></a>基于istio</h2>
     </div>
 
