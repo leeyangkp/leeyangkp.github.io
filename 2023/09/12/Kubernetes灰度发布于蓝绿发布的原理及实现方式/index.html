@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/canary_ex.gif">
 <meta property="og:image" content="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/blue.gif">
 <meta property="article:published_time" content="2023-09-12T11:39:09.000Z">
-<meta property="article:modified_time" content="2024-06-28T02:38:05.289Z">
+<meta property="article:modified_time" content="2024-06-28T02:49:32.647Z">
 <meta property="article:author" content="关山南月">
 <meta property="article:tag" content="灰度发布">
 <meta name="twitter:card" content="summary">
@@ -211,7 +211,8 @@
 <p><img src="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/canary_ex.gif" alt="灰度发布过程中出现异常"></p>
 <h1 id="蓝绿发布"><a href="#蓝绿发布" class="headerlink" title="蓝绿发布"></a>蓝绿发布</h1><p>蓝绿发布是在保留旧版本的同时，部署新版本两个版本同时在线，通过切换路由权重（非0即100）的方式实现应用的不同版本上线或者下线，如果新版本有问题，可以快速切换回旧版本。</p>
 <p><img src="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/blue.gif" alt="蓝绿发布过程"></p>
-<h1 id="灰度发布或蓝绿发布的实现方式"><a href="#灰度发布或蓝绿发布的实现方式" class="headerlink" title="灰度发布或蓝绿发布的实现方式"></a>灰度发布或蓝绿发布的实现方式</h1><h2 id="基于Kubernetes的Service"><a href="#基于Kubernetes的Service" class="headerlink" title="基于Kubernetes的Service"></a>基于Kubernetes的Service</h2><h3 id="灰度发布原理"><a href="#灰度发布原理" class="headerlink" title="灰度发布原理"></a>灰度发布原理</h3><h3 id="灰度发布实现"><a href="#灰度发布实现" class="headerlink" title="灰度发布实现"></a>灰度发布实现</h3><h3 id="蓝绿发布原理"><a href="#蓝绿发布原理" class="headerlink" title="蓝绿发布原理"></a>蓝绿发布原理</h3><h3 id="蓝绿发布实现"><a href="#蓝绿发布实现" class="headerlink" title="蓝绿发布实现"></a>蓝绿发布实现</h3><h2 id="基于Kubernetes的Ingress"><a href="#基于Kubernetes的Ingress" class="headerlink" title="基于Kubernetes的Ingress"></a>基于Kubernetes的Ingress</h2><h3 id="灰度发布原理-1"><a href="#灰度发布原理-1" class="headerlink" title="灰度发布原理"></a>灰度发布原理</h3><h3 id="蓝绿发布原理-1"><a href="#蓝绿发布原理-1" class="headerlink" title="蓝绿发布原理"></a>蓝绿发布原理</h3><h3 id="灰度发布实现-1"><a href="#灰度发布实现-1" class="headerlink" title="灰度发布实现"></a>灰度发布实现</h3><h3 id="蓝绿发布实现-1"><a href="#蓝绿发布实现-1" class="headerlink" title="蓝绿发布实现"></a>蓝绿发布实现</h3><h2 id="基于istio"><a href="#基于istio" class="headerlink" title="基于istio"></a>基于istio</h2>
+<h1 id="灰度发布或蓝绿发布的实现方式"><a href="#灰度发布或蓝绿发布的实现方式" class="headerlink" title="灰度发布或蓝绿发布的实现方式"></a>灰度发布或蓝绿发布的实现方式</h1><h2 id="基于Kubernetes的Service"><a href="#基于Kubernetes的Service" class="headerlink" title="基于Kubernetes的Service"></a>基于Kubernetes的Service</h2><h3 id="灰度发布原理"><a href="#灰度发布原理" class="headerlink" title="灰度发布原理"></a>灰度发布原理</h3><p>每个工作负载都会有对应的Service，但同一个Service可以和多个工作负载对应。Service 通过 selector 与后端 Pod 匹配，如果不同的工作负载中的 Pod 可以被同一个 selector选中，那么就可以实现一个 Service 对应多个版本的工作负载。通过调整每个工作负载的Pod数量，即可调整不同版本服务的权重，实现灰度发布效果。</p>
+<h3 id="灰度发布实现"><a href="#灰度发布实现" class="headerlink" title="灰度发布实现"></a>灰度发布实现</h3><h3 id="蓝绿发布原理"><a href="#蓝绿发布原理" class="headerlink" title="蓝绿发布原理"></a>蓝绿发布原理</h3><h3 id="蓝绿发布实现"><a href="#蓝绿发布实现" class="headerlink" title="蓝绿发布实现"></a>蓝绿发布实现</h3><h2 id="基于Kubernetes的Ingress"><a href="#基于Kubernetes的Ingress" class="headerlink" title="基于Kubernetes的Ingress"></a>基于Kubernetes的Ingress</h2><h3 id="灰度发布原理-1"><a href="#灰度发布原理-1" class="headerlink" title="灰度发布原理"></a>灰度发布原理</h3><h3 id="蓝绿发布原理-1"><a href="#蓝绿发布原理-1" class="headerlink" title="蓝绿发布原理"></a>蓝绿发布原理</h3><h3 id="灰度发布实现-1"><a href="#灰度发布实现-1" class="headerlink" title="灰度发布实现"></a>灰度发布实现</h3><h3 id="蓝绿发布实现-1"><a href="#蓝绿发布实现-1" class="headerlink" title="蓝绿发布实现"></a>蓝绿发布实现</h3><h2 id="基于istio"><a href="#基于istio" class="headerlink" title="基于istio"></a>基于istio</h2>
     </div>
 
     
