@@ -209,7 +209,8 @@
 <p><img src="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/service_canary.webp" alt="基于Service灰度发布过程"></p>
 <h3 id="蓝绿发布原理"><a href="#蓝绿发布原理" class="headerlink" title="蓝绿发布原理"></a>蓝绿发布原理</h3><p>新旧版本拥有相同的 label，但其中一个表示版本的 label 值不同。Service 使用 selector 选中其中一个版本的工作负载，此时通过修改 selector 中决定服务版本的 label 的值来改变 Service 后端对应的工作负载。即可实现服务从一个版本切换到另一个版本的目的。</p>
 <p><img src="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/service_blue.webp" alt="基于Sevice蓝绿发布过程"></p>
-<h2 id="基于Kubernetes的Ingress"><a href="#基于Kubernetes的Ingress" class="headerlink" title="基于Kubernetes的Ingress"></a>基于Kubernetes的Ingress</h2><h3 id="灰度发布原理-1"><a href="#灰度发布原理-1" class="headerlink" title="灰度发布原理"></a>灰度发布原理</h3><h3 id="蓝绿发布原理-1"><a href="#蓝绿发布原理-1" class="headerlink" title="蓝绿发布原理"></a>蓝绿发布原理</h3><h3 id="灰度发布实现"><a href="#灰度发布实现" class="headerlink" title="灰度发布实现"></a>灰度发布实现</h3><h3 id="蓝绿发布实现"><a href="#蓝绿发布实现" class="headerlink" title="蓝绿发布实现"></a>蓝绿发布实现</h3><h2 id="基于istio"><a href="#基于istio" class="headerlink" title="基于istio"></a>基于istio</h2>
+<h2 id="基于Kubernetes的Ingress"><a href="#基于Kubernetes的Ingress" class="headerlink" title="基于Kubernetes的Ingress"></a>基于Kubernetes的Ingress</h2><p>Ingress用于支持通过域名和路径的访问，通过Ingress将外部流量转发到后端的 Service 中。Nginx Ingress 是 Kubernetes 官方维护的实现，支持通过配置注解实现对流量的管控，目前 Nginx Ingress 支持基于 Header，Cookie 和 服务权重三种流量切分的策略。</p>
+<h2 id="基于istio"><a href="#基于istio" class="headerlink" title="基于istio"></a>基于istio</h2>
       
     </div>
 
