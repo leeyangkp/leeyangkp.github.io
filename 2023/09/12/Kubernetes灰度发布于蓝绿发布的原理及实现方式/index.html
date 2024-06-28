@@ -22,7 +22,7 @@
 
   <meta name="description" content="服务升级面临的最大的挑战是新旧业务切换，将服务从预生产环境带到新生产环境，同时要保证系统不间断提供服务。如果直接将新版本上线发布给全部用户，一旦遇到线上事故，对用户的影响极大，甚至不得不回滚到前一版本，严重影响了用户体验。 为了在发布新版本的过程中，实现平稳过渡。业界逐渐形成了几个常用的发布策略：灰度发布，蓝绿发布，A&#x2F;B测试等，尽可能避免因为发布导致流量丢失或着服务不可用。下面将着重介">
 <meta property="og:type" content="article">
-<meta property="og:title" content="基于Kubernetes实现灰度发布与蓝绿发布的原理及方式">
+<meta property="og:title" content="基于Kubernetes实现灰度发布与蓝绿发布的原理">
 <meta property="og:url" content="https://www.leeyangkp.com/2023/09/12/Kubernetes%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E4%BA%8E%E8%93%9D%E7%BB%BF%E5%8F%91%E5%B8%83%E7%9A%84%E5%8E%9F%E7%90%86%E5%8F%8A%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/index.html">
 <meta property="og:site_name" content="关山南月">
 <meta property="og:description" content="服务升级面临的最大的挑战是新旧业务切换，将服务从预生产环境带到新生产环境，同时要保证系统不间断提供服务。如果直接将新版本上线发布给全部用户，一旦遇到线上事故，对用户的影响极大，甚至不得不回滚到前一版本，严重影响了用户体验。 为了在发布新版本的过程中，实现平稳过渡。业界逐渐形成了几个常用的发布策略：灰度发布，蓝绿发布，A&#x2F;B测试等，尽可能避免因为发布导致流量丢失或着服务不可用。下面将着重介">
@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/service_canary.webp">
 <meta property="og:image" content="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/service_blue.webp">
 <meta property="article:published_time" content="2023-09-12T11:39:09.000Z">
-<meta property="article:modified_time" content="2024-06-28T03:02:20.542Z">
+<meta property="article:modified_time" content="2024-06-28T03:04:42.185Z">
 <meta property="article:author" content="关山南月">
 <meta property="article:tag" content="灰度发布">
 <meta name="twitter:card" content="summary">
@@ -52,7 +52,7 @@
   };
 </script>
 
-  <title>基于Kubernetes实现灰度发布与蓝绿发布的原理及方式 | 关山南月</title>
+  <title>基于Kubernetes实现灰度发布与蓝绿发布的原理 | 关山南月</title>
   
 
 
@@ -180,7 +180,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          基于Kubernetes实现灰度发布与蓝绿发布的原理及方式
+          基于Kubernetes实现灰度发布与蓝绿发布的原理
         </h1>
 
         <div class="post-meta">
@@ -215,9 +215,9 @@
 <p><img src="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/blue.gif" alt="蓝绿发布过程"></p>
 <h1 id="灰度发布或蓝绿发布的实现方式"><a href="#灰度发布或蓝绿发布的实现方式" class="headerlink" title="灰度发布或蓝绿发布的实现方式"></a>灰度发布或蓝绿发布的实现方式</h1><h2 id="基于Kubernetes的Service"><a href="#基于Kubernetes的Service" class="headerlink" title="基于Kubernetes的Service"></a>基于Kubernetes的Service</h2><h3 id="灰度发布原理"><a href="#灰度发布原理" class="headerlink" title="灰度发布原理"></a>灰度发布原理</h3><p>每个工作负载都会有对应的Service，但同一个Service可以和多个工作负载对应。Service 通过 selector 与后端 Pod 匹配，如果不同的工作负载中的 Pod 可以被同一个 selector选中，那么就可以实现一个 Service 对应多个版本的工作负载。通过调整每个工作负载的Pod数量，即可调整不同版本服务的权重，实现灰度发布效果。</p>
 <p><img src="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/service_canary.webp" alt="基于Service灰度发布过程"></p>
-<h3 id="灰度发布实现"><a href="#灰度发布实现" class="headerlink" title="灰度发布实现"></a>灰度发布实现</h3><h3 id="蓝绿发布原理"><a href="#蓝绿发布原理" class="headerlink" title="蓝绿发布原理"></a>蓝绿发布原理</h3><p>新旧版本拥有相同的 label，但其中一个表示版本的 label 值不同。Service 使用 selector 选中其中一个版本的工作负载，此时通过修改 selector 中决定服务版本的 label 的值来改变 Service 后端对应的工作负载。即可实现服务从一个版本切换到另一个版本的目的。</p>
+<h3 id="蓝绿发布原理"><a href="#蓝绿发布原理" class="headerlink" title="蓝绿发布原理"></a>蓝绿发布原理</h3><p>新旧版本拥有相同的 label，但其中一个表示版本的 label 值不同。Service 使用 selector 选中其中一个版本的工作负载，此时通过修改 selector 中决定服务版本的 label 的值来改变 Service 后端对应的工作负载。即可实现服务从一个版本切换到另一个版本的目的。</p>
 <p><img src="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/service_blue.webp" alt="基于Sevice蓝绿发布过程"></p>
-<h3 id="蓝绿发布实现"><a href="#蓝绿发布实现" class="headerlink" title="蓝绿发布实现"></a>蓝绿发布实现</h3><h2 id="基于Kubernetes的Ingress"><a href="#基于Kubernetes的Ingress" class="headerlink" title="基于Kubernetes的Ingress"></a>基于Kubernetes的Ingress</h2><h3 id="灰度发布原理-1"><a href="#灰度发布原理-1" class="headerlink" title="灰度发布原理"></a>灰度发布原理</h3><h3 id="蓝绿发布原理-1"><a href="#蓝绿发布原理-1" class="headerlink" title="蓝绿发布原理"></a>蓝绿发布原理</h3><h3 id="灰度发布实现-1"><a href="#灰度发布实现-1" class="headerlink" title="灰度发布实现"></a>灰度发布实现</h3><h3 id="蓝绿发布实现-1"><a href="#蓝绿发布实现-1" class="headerlink" title="蓝绿发布实现"></a>蓝绿发布实现</h3><h2 id="基于istio"><a href="#基于istio" class="headerlink" title="基于istio"></a>基于istio</h2>
+<h2 id="基于Kubernetes的Ingress"><a href="#基于Kubernetes的Ingress" class="headerlink" title="基于Kubernetes的Ingress"></a>基于Kubernetes的Ingress</h2><h3 id="灰度发布原理-1"><a href="#灰度发布原理-1" class="headerlink" title="灰度发布原理"></a>灰度发布原理</h3><h3 id="蓝绿发布原理-1"><a href="#蓝绿发布原理-1" class="headerlink" title="蓝绿发布原理"></a>蓝绿发布原理</h3><h3 id="灰度发布实现"><a href="#灰度发布实现" class="headerlink" title="灰度发布实现"></a>灰度发布实现</h3><h3 id="蓝绿发布实现"><a href="#蓝绿发布实现" class="headerlink" title="蓝绿发布实现"></a>蓝绿发布实现</h3><h2 id="基于istio"><a href="#基于istio" class="headerlink" title="基于istio"></a>基于istio</h2>
     </div>
 
     
@@ -290,7 +290,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83"><span class="nav-number">1.</span> <span class="nav-text">灰度发布</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%93%9D%E7%BB%BF%E5%8F%91%E5%B8%83"><span class="nav-number">2.</span> <span class="nav-text">蓝绿发布</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E6%88%96%E8%93%9D%E7%BB%BF%E5%8F%91%E5%B8%83%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">灰度发布或蓝绿发布的实现方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84Service"><span class="nav-number">3.1.</span> <span class="nav-text">基于Kubernetes的Service</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E5%8E%9F%E7%90%86"><span class="nav-number">3.1.1.</span> <span class="nav-text">灰度发布原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.1.2.</span> <span class="nav-text">灰度发布实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%93%9D%E7%BB%BF%E5%8F%91%E5%B8%83%E5%8E%9F%E7%90%86"><span class="nav-number">3.1.3.</span> <span class="nav-text">蓝绿发布原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%93%9D%E7%BB%BF%E5%8F%91%E5%B8%83%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.1.4.</span> <span class="nav-text">蓝绿发布实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84Ingress"><span class="nav-number">3.2.</span> <span class="nav-text">基于Kubernetes的Ingress</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E5%8E%9F%E7%90%86-1"><span class="nav-number">3.2.1.</span> <span class="nav-text">灰度发布原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%93%9D%E7%BB%BF%E5%8F%91%E5%B8%83%E5%8E%9F%E7%90%86-1"><span class="nav-number">3.2.2.</span> <span class="nav-text">蓝绿发布原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E5%AE%9E%E7%8E%B0-1"><span class="nav-number">3.2.3.</span> <span class="nav-text">灰度发布实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%93%9D%E7%BB%BF%E5%8F%91%E5%B8%83%E5%AE%9E%E7%8E%B0-1"><span class="nav-number">3.2.4.</span> <span class="nav-text">蓝绿发布实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8Eistio"><span class="nav-number">3.3.</span> <span class="nav-text">基于istio</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83"><span class="nav-number">1.</span> <span class="nav-text">灰度发布</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%93%9D%E7%BB%BF%E5%8F%91%E5%B8%83"><span class="nav-number">2.</span> <span class="nav-text">蓝绿发布</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E6%88%96%E8%93%9D%E7%BB%BF%E5%8F%91%E5%B8%83%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">灰度发布或蓝绿发布的实现方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84Service"><span class="nav-number">3.1.</span> <span class="nav-text">基于Kubernetes的Service</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E5%8E%9F%E7%90%86"><span class="nav-number">3.1.1.</span> <span class="nav-text">灰度发布原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%93%9D%E7%BB%BF%E5%8F%91%E5%B8%83%E5%8E%9F%E7%90%86"><span class="nav-number">3.1.2.</span> <span class="nav-text">蓝绿发布原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8EKubernetes%E7%9A%84Ingress"><span class="nav-number">3.2.</span> <span class="nav-text">基于Kubernetes的Ingress</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E5%8E%9F%E7%90%86-1"><span class="nav-number">3.2.1.</span> <span class="nav-text">灰度发布原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%93%9D%E7%BB%BF%E5%8F%91%E5%B8%83%E5%8E%9F%E7%90%86-1"><span class="nav-number">3.2.2.</span> <span class="nav-text">蓝绿发布原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.2.3.</span> <span class="nav-text">灰度发布实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%93%9D%E7%BB%BF%E5%8F%91%E5%B8%83%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.2.4.</span> <span class="nav-text">蓝绿发布实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8Eistio"><span class="nav-number">3.3.</span> <span class="nav-text">基于istio</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
