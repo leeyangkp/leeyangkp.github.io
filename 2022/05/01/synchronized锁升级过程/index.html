@@ -20,31 +20,33 @@
     var CONFIG = {"hostname":"www.leeyangkp.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="热爱生活，热爱分享！">
-<meta property="og:type" content="website">
-<meta property="og:title" content="关山南月">
-<meta property="og:url" content="https://www.leeyangkp.com/index.html">
+  <meta name="description" content="在Java中，synchronized锁升级过程是指从轻量级锁升级到重量级锁的过程。这个过程主要包括无锁，偏向锁，轻量级锁和重量级锁三个阶段。以下是详细的锁升级过程。 1，无锁在没有同步竞争的情况下，对象头的Mark Word无需任何锁的信息，线程直接访问共享资源。 2，偏向锁偏向锁是为了减少无竞争情况下锁开销设计的。主要特点是：  当一个线程第一次获取锁时，锁对象头会记录该线程ID 后续该线程再">
+<meta property="og:type" content="article">
+<meta property="og:title" content="synchronized锁升级过程">
+<meta property="og:url" content="https://www.leeyangkp.com/2022/05/01/synchronized%E9%94%81%E5%8D%87%E7%BA%A7%E8%BF%87%E7%A8%8B/index.html">
 <meta property="og:site_name" content="关山南月">
-<meta property="og:description" content="热爱生活，热爱分享！">
+<meta property="og:description" content="在Java中，synchronized锁升级过程是指从轻量级锁升级到重量级锁的过程。这个过程主要包括无锁，偏向锁，轻量级锁和重量级锁三个阶段。以下是详细的锁升级过程。 1，无锁在没有同步竞争的情况下，对象头的Mark Word无需任何锁的信息，线程直接访问共享资源。 2，偏向锁偏向锁是为了减少无竞争情况下锁开销设计的。主要特点是：  当一个线程第一次获取锁时，锁对象头会记录该线程ID 后续该线程再">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-05-01T04:28:46.000Z">
+<meta property="article:modified_time" content="2024-07-01T05:09:57.222Z">
 <meta property="article:author" content="关山南月">
-<meta property="article:tag" content="微服务">
+<meta property="article:tag" content="并发编程">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://www.leeyangkp.com/">
+<link rel="canonical" href="https://www.leeyangkp.com/2022/05/01/synchronized%E9%94%81%E5%8D%87%E7%BA%A7%E8%BF%87%E7%A8%8B/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>关山南月</title>
+  <title>synchronized锁升级过程 | 关山南月</title>
   
 
 
@@ -152,137 +154,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.leeyangkp.com/2024/07/01/Java%E4%B8%AD%E7%BA%BF%E7%A8%8B%E7%9A%84%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/touxiang.jpg">
-      <meta itemprop="name" content="关山南月">
-      <meta itemprop="description" content="热爱生活，热爱分享！">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关山南月">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/07/01/Java%E4%B8%AD%E7%BA%BF%E7%A8%8B%E7%9A%84%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD/" class="post-title-link" itemprop="url">Java中线程的优雅关闭</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2024-07-01 12:25:14" itemprop="dateCreated datePublished" datetime="2024-07-01T12:25:14+08:00">2024-07-01</time>
-            </span>
-
-          
-
-        </div>
-      </header>
 
     
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.leeyangkp.com/2023/09/12/Kubernetes%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E4%BA%8E%E8%93%9D%E7%BB%BF%E5%8F%91%E5%B8%83%E7%9A%84%E5%8E%9F%E7%90%86%E5%8F%8A%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/touxiang.jpg">
-      <meta itemprop="name" content="关山南月">
-      <meta itemprop="description" content="热爱生活，热爱分享！">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="关山南月">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/09/12/Kubernetes%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E4%BA%8E%E8%93%9D%E7%BB%BF%E5%8F%91%E5%B8%83%E7%9A%84%E5%8E%9F%E7%90%86%E5%8F%8A%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/" class="post-title-link" itemprop="url">基于Kubernetes实现灰度发布与蓝绿发布的原理</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2023-09-12 19:39:09" itemprop="dateCreated datePublished" datetime="2023-09-12T19:39:09+08:00">2023-09-12</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>服务升级面临的最大的挑战是新旧业务切换，将服务从预生产环境带到新生产环境，同时要保证系统不间断提供服务。如果直接将新版本上线发布给全部用户，一旦遇到线上事故，对用户的影响极大，甚至不得不回滚到前一版本，严重影响了用户体验。</p>
-<p>为了在发布新版本的过程中，实现平稳过渡。业界逐渐形成了几个常用的发布策略：灰度发布，蓝绿发布，A&#x2F;B测试等，尽可能避免因为发布导致流量丢失或着服务不可用。下面将着重介绍灰度发布和蓝绿发布的原理及实践。</p>
-<h1 id="灰度发布"><a href="#灰度发布" class="headerlink" title="灰度发布"></a>灰度发布</h1><p>又称金丝雀发布，当版本升级时，使一部分用户使用新版本，其他用户继续使用老版本，待新版本稳定后，逐步扩大新版本用户范围，直到将所有用户流量迁移到新版本上面。这样可以保障在服务的升级过程中，观测新版本健康状况，降低了故障带来的影响面，同时支持快速回滚。</p>
-<p>以下示意图可描述灰度发布的大致流程：先切分 20% 的流量到新版本，若表现正常，逐步增加新版本流量占比，继续观测新版本表现。如果一直没有异常，那么将所有流量都切分到新版本，并下线旧版本。</p>
-<p><img src="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/canary.gif" alt="灰度发布过程"></p>
-<p>灰度过程中，新版本出现异常，则快速将流量切回老版本。</p>
-<p><img src="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/canary_ex.gif" alt="灰度发布过程中出现异常"></p>
-<h1 id="蓝绿发布"><a href="#蓝绿发布" class="headerlink" title="蓝绿发布"></a>蓝绿发布</h1><p>蓝绿发布是在保留旧版本的同时，部署新版本两个版本同时在线，通过切换路由权重（非0即100）的方式实现应用的不同版本上线或者下线，如果新版本有问题，可以快速切换回旧版本。</p>
-<p><img src="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/blue.gif" alt="蓝绿发布过程"></p>
-<h1 id="灰度发布或蓝绿发布的实现方式"><a href="#灰度发布或蓝绿发布的实现方式" class="headerlink" title="灰度发布或蓝绿发布的实现方式"></a>灰度发布或蓝绿发布的实现方式</h1><h2 id="基于Kubernetes的Service"><a href="#基于Kubernetes的Service" class="headerlink" title="基于Kubernetes的Service"></a>基于Kubernetes的Service</h2><h3 id="灰度发布原理"><a href="#灰度发布原理" class="headerlink" title="灰度发布原理"></a>灰度发布原理</h3><p>每个工作负载都会有对应的Service，但同一个Service可以和多个工作负载对应。Service 通过 selector 与后端 Pod 匹配，如果不同的工作负载中的 Pod 可以被同一个 selector选中，那么就可以实现一个 Service 对应多个版本的工作负载。通过调整每个工作负载的Pod数量，即可调整不同版本服务的权重，实现灰度发布效果。</p>
-<p><img src="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/service_canary.webp" alt="基于Service灰度发布过程"></p>
-<h3 id="蓝绿发布原理"><a href="#蓝绿发布原理" class="headerlink" title="蓝绿发布原理"></a>蓝绿发布原理</h3><p>新旧版本拥有相同的 label，但其中一个表示版本的 label 值不同。Service 使用 selector 选中其中一个版本的工作负载，此时通过修改 selector 中决定服务版本的 label 的值来改变 Service 后端对应的工作负载。即可实现服务从一个版本切换到另一个版本的目的。</p>
-<p><img src="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/service_blue.webp" alt="基于Sevice蓝绿发布过程"></p>
-<h2 id="基于Kubernetes的Ingress"><a href="#基于Kubernetes的Ingress" class="headerlink" title="基于Kubernetes的Ingress"></a>基于Kubernetes的Ingress</h2><p>Ingress用于支持通过域名和路径的访问，通过Ingress将外部流量转发到后端的 Service 中。Nginx Ingress 是 Kubernetes 官方维护的实现，支持通过配置注解实现对流量的管控，目前 Nginx Ingress 支持基于 Header，Cookie 和 服务权重三种流量切分的策略。</p>
-<h2 id="基于istio"><a href="#基于istio" class="headerlink" title="基于istio"></a>基于istio</h2>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -298,10 +173,9 @@
       <meta itemprop="name" content="关山南月">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/05/01/synchronized%E9%94%81%E5%8D%87%E7%BA%A7%E8%BF%87%E7%A8%8B/" class="post-title-link" itemprop="url">synchronized锁升级过程</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          synchronized锁升级过程
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -324,7 +198,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>在Java中，synchronized锁升级过程是指从轻量级锁升级到重量级锁的过程。这个过程主要包括无锁，偏向锁，轻量级锁和重量级锁三个阶段。以下是详细的锁升级过程。</p>
+        <p>在Java中，synchronized锁升级过程是指从轻量级锁升级到重量级锁的过程。这个过程主要包括无锁，偏向锁，轻量级锁和重量级锁三个阶段。以下是详细的锁升级过程。</p>
 <h2 id="1，无锁"><a href="#1，无锁" class="headerlink" title="1，无锁"></a>1，无锁</h2><p>在没有同步竞争的情况下，对象头的Mark Word无需任何锁的信息，线程直接访问共享资源。</p>
 <h2 id="2，偏向锁"><a href="#2，偏向锁" class="headerlink" title="2，偏向锁"></a>2，偏向锁</h2><p>偏向锁是为了减少无竞争情况下锁开销设计的。主要特点是：</p>
 <ul>
@@ -368,21 +242,33 @@
 </ul>
 <p>通过锁升级机制，Java在不同的并发场景下选择合适的锁类型，以减少锁竞争带来的性能开销。</p>
 
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
+          <div class="post-tags">
+              <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag"># 并发编程</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2023/09/12/Kubernetes%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83%E4%BA%8E%E8%93%9D%E7%BB%BF%E5%8F%91%E5%B8%83%E7%9A%84%E5%8E%9F%E7%90%86%E5%8F%8A%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/" rel="next" title="基于Kubernetes实现灰度发布与蓝绿发布的原理">
+      基于Kubernetes实现灰度发布与蓝绿发布的原理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
       </footer>
+    
   </article>
   
   
-  
-
-
   
 
 
@@ -435,6 +321,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%EF%BC%8C%E6%97%A0%E9%94%81"><span class="nav-number">1.</span> <span class="nav-text">1，无锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%EF%BC%8C%E5%81%8F%E5%90%91%E9%94%81"><span class="nav-number">2.</span> <span class="nav-text">2，偏向锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3%EF%BC%8C%E8%BD%BB%E9%87%8F%E7%BA%A7%E9%94%81"><span class="nav-number">3.</span> <span class="nav-text">3，轻量级锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4%EF%BC%8C%E9%87%8D%E9%87%8F%E7%BA%A7%E9%94%81"><span class="nav-number">4.</span> <span class="nav-text">4，重量级锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5%EF%BC%8C%E9%94%81%E5%8D%87%E7%BA%A7%E8%BF%87%E7%A8%8B%E7%A4%BA%E4%BE%8B"><span class="nav-number">5.</span> <span class="nav-text">5，锁升级过程示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%EF%BC%8C%E5%81%8F%E5%90%91%E9%94%81%E9%98%B6%E6%AE%B5"><span class="nav-number">5.1.</span> <span class="nav-text">1，偏向锁阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%EF%BC%8C%E5%81%8F%E5%90%91%E9%94%81%E6%92%A4%E9%94%80"><span class="nav-number">5.2.</span> <span class="nav-text">2，偏向锁撤销</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%EF%BC%8C%E8%BD%BB%E9%87%8F%E7%BA%A7%E9%94%81%E9%98%B6%E6%AE%B5"><span class="nav-number">5.3.</span> <span class="nav-text">3，轻量级锁阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%EF%BC%8C%E9%87%8D%E9%87%8F%E7%BA%A7%E9%94%81%E9%98%B6%E6%AE%B5"><span class="nav-number">5.4.</span> <span class="nav-text">4，重量级锁阶段</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
