@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"www.leeyangkp.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="在Java中，synchronized锁升级过程是指从轻量级锁升级到重量级锁的过程。这个过程主要包括无锁，偏向锁，轻量级锁和重量级锁三个阶段。以下是详细的锁升级过程。 1，无锁在没有同步竞争的情况下，对象头的Mark Word无需任何锁的信息，线程直接访问共享资源。 2，偏向锁偏向锁是为了减少无竞争情况下锁开销设计的。主要特点是：  当一个线程第一次获取锁时，锁对象头会记录该线程ID 后续该线程再">
+  <meta name="description" content="在Java中，synchronized锁升级过程是指从轻量级锁升级到重量级锁的过程。这个过程主要包括无锁，偏向锁，轻量级锁和重量级锁三个阶段。以下是详细的锁升级过程。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="synchronized锁升级过程">
 <meta property="og:url" content="https://www.leeyangkp.com/2022/05/01/synchronized%E9%94%81%E5%8D%87%E7%BA%A7%E8%BF%87%E7%A8%8B/index.html">
 <meta property="og:site_name" content="关山南月">
-<meta property="og:description" content="在Java中，synchronized锁升级过程是指从轻量级锁升级到重量级锁的过程。这个过程主要包括无锁，偏向锁，轻量级锁和重量级锁三个阶段。以下是详细的锁升级过程。 1，无锁在没有同步竞争的情况下，对象头的Mark Word无需任何锁的信息，线程直接访问共享资源。 2，偏向锁偏向锁是为了减少无竞争情况下锁开销设计的。主要特点是：  当一个线程第一次获取锁时，锁对象头会记录该线程ID 后续该线程再">
+<meta property="og:description" content="在Java中，synchronized锁升级过程是指从轻量级锁升级到重量级锁的过程。这个过程主要包括无锁，偏向锁，轻量级锁和重量级锁三个阶段。以下是详细的锁升级过程。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-05-01T04:28:46.000Z">
-<meta property="article:modified_time" content="2024-07-01T05:09:57.222Z">
+<meta property="article:modified_time" content="2024-07-02T11:07:57.394Z">
 <meta property="article:author" content="关山南月">
 <meta property="article:tag" content="并发编程">
 <meta name="twitter:card" content="summary">
@@ -188,6 +188,7 @@
             </span>
 
           
+            <div class="post-description">在Java中，synchronized锁升级过程是指从轻量级锁升级到重量级锁的过程。这个过程主要包括无锁，偏向锁，轻量级锁和重量级锁三个阶段。以下是详细的锁升级过程。</div>
 
         </div>
       </header>
