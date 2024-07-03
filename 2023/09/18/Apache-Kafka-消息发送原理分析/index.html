@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/Kafka%E7%94%9F%E4%BA%A7%E8%80%85%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84.png">
 <meta property="article:published_time" content="2023-09-18T03:10:39.000Z">
-<meta property="article:modified_time" content="2024-07-03T05:54:40.751Z">
+<meta property="article:modified_time" content="2024-07-03T05:56:34.826Z">
 <meta property="article:author" content="关山南月">
 <meta property="article:tag" content="kafka">
 <meta name="twitter:card" content="summary">
@@ -262,15 +262,10 @@
 <h2 id="compression-type"><a href="#compression-type" class="headerlink" title="compression.type"></a>compression.type</h2><blockquote>
 <p>指定消息的压缩方式，默认是none，即默认情况下，消息不会被压缩。该参数可以被设置为 gzip，snappy 和lz4。对消息进行压缩可以极大地减少网络传输量，降低网络IO，从而提高整体的性能。如果对时延有一定的要求，则不推荐对消息进行压缩。</p>
 </blockquote>
-<h2 id="connections-max-idle-ms"><a href="#connections-max-idle-ms" class="headerlink" title="connections.max.idle.ms"></a>connections.max.idle.ms</h2><blockquote>
-<p>这个参数用来指定多久之后关闭限制的连接，默认是9分钟</p>
-</blockquote>
 <h2 id="linger-ms"><a href="#linger-ms" class="headerlink" title="linger.ms"></a>linger.ms</h2><blockquote>
 <p>生产者客户端会在 ProducerBatch （batch.size）被填满或等待时间超过 linger.ms 值时发送出去。增大这个参数的值会增加消息的延迟，但是同时能提升一定的吞吐量。</p>
 </blockquote>
-<h2 id="receive-buffer-bytes"><a href="#receive-buffer-bytes" class="headerlink" title="receive.buffer.bytes"></a>receive.buffer.bytes</h2><blockquote>
-</blockquote>
-<h2 id="send-buffer-bytes"><a href="#send-buffer-bytes" class="headerlink" title="send.buffer.bytes"></a>send.buffer.bytes</h2><h2 id="request-timeout-ms"><a href="#request-timeout-ms" class="headerlink" title="request.timeout.ms"></a>request.timeout.ms</h2>
+
     </div>
 
     
@@ -353,7 +348,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">Kafka 发送消息整体架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">Kafka 发送消息原理解析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-%E5%85%83%E6%95%B0%E6%8D%AE%E7%9A%84%E6%9B%B4%E6%96%B0"><span class="nav-number">3.</span> <span class="nav-text">Kafka 元数据的更新</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-%E7%94%9F%E4%BA%A7%E8%80%85%E5%B8%B8%E7%94%A8%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E"><span class="nav-number">4.</span> <span class="nav-text">Kafka 生产者常用参数说明</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#acks"><span class="nav-number">4.1.</span> <span class="nav-text">acks</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#max-request-size"><span class="nav-number">4.2.</span> <span class="nav-text">max.request.size</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#retries"><span class="nav-number">4.3.</span> <span class="nav-text">retries</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#retry-backoff-ms"><span class="nav-number">4.4.</span> <span class="nav-text">retry.backoff.ms</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#compression-type"><span class="nav-number">4.5.</span> <span class="nav-text">compression.type</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#connections-max-idle-ms"><span class="nav-number">4.6.</span> <span class="nav-text">connections.max.idle.ms</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#linger-ms"><span class="nav-number">4.7.</span> <span class="nav-text">linger.ms</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#receive-buffer-bytes"><span class="nav-number">4.8.</span> <span class="nav-text">receive.buffer.bytes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#send-buffer-bytes"><span class="nav-number">4.9.</span> <span class="nav-text">send.buffer.bytes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#request-timeout-ms"><span class="nav-number">4.10.</span> <span class="nav-text">request.timeout.ms</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">Kafka 发送消息整体架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">Kafka 发送消息原理解析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-%E5%85%83%E6%95%B0%E6%8D%AE%E7%9A%84%E6%9B%B4%E6%96%B0"><span class="nav-number">3.</span> <span class="nav-text">Kafka 元数据的更新</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-%E7%94%9F%E4%BA%A7%E8%80%85%E5%B8%B8%E7%94%A8%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E"><span class="nav-number">4.</span> <span class="nav-text">Kafka 生产者常用参数说明</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#acks"><span class="nav-number">4.1.</span> <span class="nav-text">acks</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#max-request-size"><span class="nav-number">4.2.</span> <span class="nav-text">max.request.size</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#retries"><span class="nav-number">4.3.</span> <span class="nav-text">retries</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#retry-backoff-ms"><span class="nav-number">4.4.</span> <span class="nav-text">retry.backoff.ms</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#compression-type"><span class="nav-number">4.5.</span> <span class="nav-text">compression.type</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#linger-ms"><span class="nav-number">4.6.</span> <span class="nav-text">linger.ms</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
