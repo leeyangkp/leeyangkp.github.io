@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/Kafka%E7%94%9F%E4%BA%A7%E8%80%85%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84.png">
 <meta property="article:published_time" content="2023-09-18T03:10:39.000Z">
-<meta property="article:modified_time" content="2024-07-03T04:09:23.678Z">
+<meta property="article:modified_time" content="2024-07-03T04:52:47.838Z">
 <meta property="article:author" content="关山南月">
 <meta property="article:tag" content="kafka">
 <meta name="twitter:card" content="summary">
@@ -207,7 +207,19 @@
 <p>RecordAccumulator 主要用来缓存消息以便 Sender 线程可以批量发送，进而减少网络传输的资源消耗以以提升性能。RecordAccumulator 缓存的大小可以通过客户端参数<strong>buffer.memory</strong>配置，默认大小为 32M。如果生产者发送消息的速度超过发送到服务器的速度，则会导致生产者空间不足，此时 KafkaProducer 的 send() 方法调用要么被阻塞，要么抛出异常，这个取决于参数<strong>max.block.ms</strong> 的配置，该参数默认值是 60s。</p>
 <p>主线程中发送过来的消息都会被追加到 RecordAccumulator 的某个双端队列中，在 RecordAccumulator 内部为每个分区都维护一个双端队列，队列的内容就是 ProducerBatch，即<code>Deque&lt;ProducerBatch&gt;</code>。消息写入缓存时，追加到双端队列的尾部；Sender 读取消息时，从双端队列的头部读取。注意ProducerBatch不是 ProducerRecord，ProducerBatch中可以包含一或多个ProducerRecord。也就说，ProducerRecord 会被包含在 ProducerBatch 中，这样可以使较小的 ProducerRecord 拼凑成一个较大的 ProducerBatch，也可以减少网络请求的次数以提升整体的吞吐量。如果消息生产者客户端需要向很多分区发送消息，则可以将buffer.memory参数适当调大以增加整体的吞吐量。</p>
 <p>消息在网络上是以字节的形式传输的，在发送之前需要创建一块内存区域来保存对应的消息。在 Kafka 生产者中，通过<code>java.io.ByteBuffer</code> 实现消息内存的创建和释放。不过频繁的创建和释放是比较耗费资源的，在 RecordAccumulator 的内部还有一个 BufferPool，它主要用来实现 ByteBuffer的复用，以实现缓存的高效利用。不过 BufferPool 只针对特定大小的ByteBuffer进行管理，而其他大小的 ByteBuffer 不会缓存在 BufferPool 中，这个特定大小由batch.size参数来指定，默认是16KB，我们可以适当调整这个参数来多缓存一些消息。</p>
+<p>当一条消息ProducerRecord进入 RecordAccumulator 时，会先寻找与消息分区所对应的双端队列（如果没有则新建），再从这个双端队列的尾部获取一个ProducerBatch（如果没有则新建），查看 ProducerBatch 中是否还可以写入这个ProducerRecord，如果可以则写入，如果不可以则需要创建一个新的ProducerBatch。在新建一个 ProducerBatch 时评估这条消息的大小是否超过 batch.size 参数的大小，如果没有超过，那么就以 batch.size 参数的大小来创建 ProducerBatch，这样在使用完这段内存区域之后，可以通过BufferPool的管理来进行复用。如果超过，那么就以评估的大小来创建 ProducerBatch，这段内存区域不会被复用。</p>
+<p>Sender 从 RecordAccumulator 中获取缓存的消息之后，会进一步将原本&lt;分区，Deque<ProducerBatch>&gt; 的保存形式转变成&lt;Node，List<ProducerBatch>&gt; 的形式，其中 Node 表示 Kafka 集群的 Broker 节点。对于网络连接来说，生产者客户端是与具体的Broker节点建立的连接，而并不关心属于哪一个分区；而对于 KafkaProducer 的应用逻辑而言，我们只关系向哪个分区中发送哪些消息，所以在这里需要做一个应用逻辑层面到网络IO层面的转换。</p>
+<p>在转换成 &lt;Node，List<ProducerBatch>&gt; 的形式之后，Sender 还会进一步封装成&lt;Node,Request&gt; 的形式，这样就可以将 Request 请求发往各个Node了。</p>
+<p>请求在从Sender线程发往 Kafka 之前，还会保存到 InFlightRequests 中，InFlightRequests 保存对象的具体形式为 Map&lt;Node-Id,Deque<Request>&gt;，主要作用是缓存了已经发送出去但是还没有收到响应的请求。与此同时，InFlightRequests还提供了许多管理类的方法，并且通过配置参数，还可以限制每个连接最多缓存的请求数。这个配置参数<code>max.in.flight.requests.per.connection</code>，默认值为 5，即每个连接最多只能缓存5个未响应的请求，超过该数值之后就不能再向这个连接发送更多的请求了，除非有缓存收到了响应。通过比较Deque<Request> 的 size 与这个参数的大小来判断对应的 Node 中是否已经堆积了很多未响应的消息，如果真是如此，那么说明这个 Node 节点负载较大或网络连接有问题，再继续向其发送请求会增大请求超时的可能。</p>
+<h1 id="Kafka-元数据的更新"><a href="#Kafka-元数据的更新" class="headerlink" title="Kafka 元数据的更新"></a>Kafka 元数据的更新</h1><p>InFlightRequests 还可以获得 leastLoadedNode，即所有Node中负载最小的那一个。这里的负载最小是通过每个Node在InFlightRequests中还未确认的请求决定的，未确认的请求越多则认为负载越大。选择 leastLoadedNode 发送请求可以使它能够尽快发出，避免因为网络拥堵等异常而影响整体的进度。</p>
+<p>我们是用如下方式创建一条消息 ProducerRecord：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ProducerRecord&lt;String,String&gt; record = <span class="keyword">new</span> <span class="title class_">ProducerRecord</span>&lt;&gt;(topic,<span class="string">&quot;Hello, Kafka!&quot;</span>);</span><br></pre></td></tr></table></figure>
 
+<p>我们只知道主题名称，对于其他必要的信息一无所知。KafkaProducer 要将此消息追加到指定主题的某个分区所对应的 leader 副本之前，首先需要知道主题的分区数量，然后经过计算得出目标分区，之后 KafkaProducer 需要知道目标分区的 Leader 副本所在的 Broker 节点的地址，端口号等信息才能建立连接，最终才能将消息发送到 Kafka，在这一过程中所需要的信息都属于元数据信息。</p>
+<p>与此同时，分区数量以及leader副本的分布都会动态地变化，客户端也需要动态地捕获这些变化。</p>
+<p>元数据是指 Kafka 集群的元数据，这些元数据具体记录了集群中有哪些主题，这些主题有哪些分区，每个分区的 leader 副本分配在哪个节点上，follower 副本分配在哪些节点上，哪些副本在 AR，ISR等集合中，集群中有哪些节点，控制器节点又是哪一个等信息。</p>
+<p>当客户端中没有需要使用的元数据信息时，比如没有指定的主题信息，或者超过metadata.max.age.ms 时间（该值默认5分钟）没有更新元数据都会引起元数据的更新操作。元数据的更新操作在客户端内部完成，对客户端外部使用者不可见。当需要更新元数据时，会先挑选出leastLoadedNode，然后向这个 Node 发送 MetadataRequest 请求来获取具体的元数据信息。这个更新操作是由 Sender 线程发起的，在创建完成 MetadataRequest 之后同样会存入 InFlightRequests，之后的步骤就和发送消息时的类似。元数据虽然由 Sender 线程负责更新，但是主线程也需要读取这些信息，这里的数据同步通过 synchronized 和 final 关键字保障。</p>
+<h1 id="Kafka-生产者常用参数说明"><a href="#Kafka-生产者常用参数说明" class="headerlink" title="Kafka 生产者常用参数说明"></a>Kafka 生产者常用参数说明</h1>
     </div>
 
     
@@ -290,7 +302,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">Kafka 发送消息整体架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">Kafka 发送消息原理解析</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">Kafka 发送消息整体架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">Kafka 发送消息原理解析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-%E5%85%83%E6%95%B0%E6%8D%AE%E7%9A%84%E6%9B%B4%E6%96%B0"><span class="nav-number">3.</span> <span class="nav-text">Kafka 元数据的更新</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-%E7%94%9F%E4%BA%A7%E8%80%85%E5%B8%B8%E7%94%A8%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E"><span class="nav-number">4.</span> <span class="nav-text">Kafka 生产者常用参数说明</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
