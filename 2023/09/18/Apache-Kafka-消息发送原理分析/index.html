@@ -20,20 +20,22 @@
     var CONFIG = {"hostname":"www.leeyangkp.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="热爱生活，热爱分享！">
+  <meta name="description" content="本篇内容主要梳理Kafka客户端的内部原理">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Apache Kafka Topic原理">
-<meta property="og:url" content="https://www.leeyangkp.com/2024/07/02/Apache-Kafka-Topic%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:title" content="Apache Kafka 消息发送原理分析">
+<meta property="og:url" content="https://www.leeyangkp.com/2023/09/18/Apache-Kafka-%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/index.html">
 <meta property="og:site_name" content="关山南月">
-<meta property="og:description" content="热爱生活，热爱分享！">
+<meta property="og:description" content="本篇内容主要梳理Kafka客户端的内部原理">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-07-02T07:16:26.000Z">
-<meta property="article:modified_time" content="2024-07-02T07:16:26.325Z">
+<meta property="og:image" content="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/Kafka%E7%94%9F%E4%BA%A7%E8%80%85%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84.png">
+<meta property="article:published_time" content="2023-09-18T03:10:39.000Z">
+<meta property="article:modified_time" content="2024-07-03T04:09:23.678Z">
 <meta property="article:author" content="关山南月">
-<meta property="article:tag" content="微服务">
+<meta property="article:tag" content="kafka">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/Kafka%E7%94%9F%E4%BA%A7%E8%80%85%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84.png">
 
-<link rel="canonical" href="https://www.leeyangkp.com/2024/07/02/Apache-Kafka-Topic%E5%8E%9F%E7%90%86/">
+<link rel="canonical" href="https://www.leeyangkp.com/2023/09/18/Apache-Kafka-%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/">
 
 
 <script id="page-configurations">
@@ -46,7 +48,7 @@
   };
 </script>
 
-  <title>Apache Kafka Topic原理 | 关山南月</title>
+  <title>Apache Kafka 消息发送原理分析 | 关山南月</title>
   
 
 
@@ -161,7 +163,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.leeyangkp.com/2024/07/02/Apache-Kafka-Topic%E5%8E%9F%E7%90%86/">
+    <link itemprop="mainEntityOfPage" href="https://www.leeyangkp.com/2023/09/18/Apache-Kafka-%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/touxiang.jpg">
@@ -174,7 +176,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Apache Kafka Topic原理
+          Apache Kafka 消息发送原理分析
         </h1>
 
         <div class="post-meta">
@@ -184,10 +186,11 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2024-07-02 15:16:26" itemprop="dateCreated datePublished" datetime="2024-07-02T15:16:26+08:00">2024-07-02</time>
+              <time title="创建时间：2023-09-18 11:10:39" itemprop="dateCreated datePublished" datetime="2023-09-18T11:10:39+08:00">2023-09-18</time>
             </span>
 
           
+            <div class="post-description">本篇内容主要梳理Kafka客户端的内部原理</div>
 
         </div>
       </header>
@@ -198,7 +201,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        
+        <h1 id="Kafka-发送消息整体架构"><a href="#Kafka-发送消息整体架构" class="headerlink" title="Kafka 发送消息整体架构"></a>Kafka 发送消息整体架构</h1><p><img src="https://leeyangkp.obs.cn-north-4.myhuaweicloud.com/hexo/images/Kafka%E7%94%9F%E4%BA%A7%E8%80%85%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84.png" alt="Kafka生产者客户端整体架构"></p>
+<h1 id="Kafka-发送消息原理解析"><a href="#Kafka-发送消息原理解析" class="headerlink" title="Kafka 发送消息原理解析"></a>Kafka 发送消息原理解析</h1><p>Kafka 在发送消息之前会先经历拦截器ProducerInterceptors（如果有），序列化器（Serializer）和分区器（Partitioner）等一系列的作用，那么在这之后又会发生什么呢?</p>
+<p>整个生产者客户端有两个线程协调运行，这两个线程分别为<strong>主线程</strong>和<strong>Sender线程</strong>。在主线程中由<strong>KafkaProducer</strong>创建消息，然后通过可能的<strong>拦截器</strong>，<strong>序列化器</strong>和<strong>分区器</strong>的作用之后缓存到<strong>消息收集器</strong>（RecordAccumulator）中。Sender线程负责从 RecordAccumulator 中获取消息并将其发送到 Kafka 中。</p>
+<p>RecordAccumulator 主要用来缓存消息以便 Sender 线程可以批量发送，进而减少网络传输的资源消耗以以提升性能。RecordAccumulator 缓存的大小可以通过客户端参数<strong>buffer.memory</strong>配置，默认大小为 32M。如果生产者发送消息的速度超过发送到服务器的速度，则会导致生产者空间不足，此时 KafkaProducer 的 send() 方法调用要么被阻塞，要么抛出异常，这个取决于参数<strong>max.block.ms</strong> 的配置，该参数默认值是 60s。</p>
+<p>主线程中发送过来的消息都会被追加到 RecordAccumulator 的某个双端队列中，在 RecordAccumulator 内部为每个分区都维护一个双端队列，队列的内容就是 ProducerBatch，即<code>Deque&lt;ProducerBatch&gt;</code>。消息写入缓存时，追加到双端队列的尾部；Sender 读取消息时，从双端队列的头部读取。注意ProducerBatch不是 ProducerRecord，ProducerBatch中可以包含一或多个ProducerRecord。也就说，ProducerRecord 会被包含在 ProducerBatch 中，这样可以使较小的 ProducerRecord 拼凑成一个较大的 ProducerBatch，也可以减少网络请求的次数以提升整体的吞吐量。如果消息生产者客户端需要向很多分区发送消息，则可以将buffer.memory参数适当调大以增加整体的吞吐量。</p>
+<p>消息在网络上是以字节的形式传输的，在发送之前需要创建一块内存区域来保存对应的消息。在 Kafka 生产者中，通过<code>java.io.ByteBuffer</code> 实现消息内存的创建和释放。不过频繁的创建和释放是比较耗费资源的，在 RecordAccumulator 的内部还有一个 BufferPool，它主要用来实现 ByteBuffer的复用，以实现缓存的高效利用。不过 BufferPool 只针对特定大小的ByteBuffer进行管理，而其他大小的 ByteBuffer 不会缓存在 BufferPool 中，这个特定大小由batch.size参数来指定，默认是16KB，我们可以适当调整这个参数来多缓存一些消息。</p>
+
     </div>
 
     
@@ -206,6 +215,9 @@
     
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/kafka/" rel="tag"># kafka</a>
+          </div>
 
         
 
@@ -213,12 +225,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2023/09/18/Apache-Kafka-%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/" rel="prev" title="Apache Kafka 消息发送原理分析">
-      <i class="fa fa-chevron-left"></i> Apache Kafka 消息发送原理分析
+    <a href="/2023/09/12/Apache-Kafka-%E6%B6%88%E6%81%AF%E6%B6%88%E8%B4%B9%E5%8E%9F%E7%90%86/" rel="prev" title="Apache Kafka 消息消费原理">
+      <i class="fa fa-chevron-left"></i> Apache Kafka 消息消费原理
     </a></div>
       <div class="post-nav-item">
-    <a href="/2024/07/02/Apache-Kafka-%E7%89%A9%E7%90%86%E5%AD%98%E5%82%A8/" rel="next" title="Apache Kafka 物理存储">
-      Apache Kafka 物理存储 <i class="fa fa-chevron-right"></i>
+    <a href="/2024/07/02/Apache-Kafka-Topic%E5%8E%9F%E7%90%86/" rel="next" title="Apache Kafka Topic原理">
+      Apache Kafka Topic原理 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -278,6 +290,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">Kafka 发送消息整体架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">Kafka 发送消息原理解析</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
